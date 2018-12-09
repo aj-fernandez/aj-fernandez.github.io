@@ -1,7 +1,7 @@
 # aj-fernandez.github.io
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Solar-System.pdf/page1-3897px-Solar-System.pdf.jpg)
 
-# Installing Elastichsearch
+# Installing Elastichsearch on Hewlett Packard ML350 G5 x2 XEON 8 GB
 ![alt text](https://ydevs.com/wp-content/uploads/2017/10/logos-stack-elk.png)
 ### Update and install required packages
 
