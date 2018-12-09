@@ -113,7 +113,7 @@ Validating Logstash setup
 
 		sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
 
-### Install Filebeat on forwarders-nodes (https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-configuration.html)
+### Install Filebeat on forwarders-nodes
 
 Home path: [/usr/share/filebeat] Config path: [/etc/filebeat] Data path: [/var/lib/filebeat] Logs path: [/var/log/filebeat]
 	
@@ -141,6 +141,8 @@ Add credentials if elasctichsearch or kibana have been secured:
 		  host: "mykibanahost:5601"
 		  username: "myKibanaUser"  
 		  password: "typePassword"
+
+[Filebeat config official guide](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-configuration.html)
 
 ### Enable modules that you want to run
 
