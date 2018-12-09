@@ -52,8 +52,8 @@ Edit /etc/kibana/kibana.yml
 
 ### Restart Kibana for load changes and enable for load at new boots
 
-	systemctl restart elasticsearch
-	systemctl enable elasticsearch
+	systemctl restart kibana
+	systemctl enable kibana
 
 ### Usin Nginx like reverse proxy to access Kibana from public IP
 
