@@ -65,7 +65,7 @@ Edit /etc/kibana/kibana.yml
 
 		echo "admin:$(openssl passwd -apr1 typeHereThePassword)" | sudo tee -a /etc/nginx/htpasswd.kibana
 
-This is a virtual host config file, delete default and create /etc/nginx/sites-available/kibana:
+This is a virtual host config file, delete the default file and create /etc/nginx/sites-available/kibana:
 		
 		server {
 		    listen 80 default_server;
