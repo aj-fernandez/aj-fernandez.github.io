@@ -40,7 +40,7 @@ On: /usr/share/elasticsearch
 	bin/elasticsearch-plugin install ingest-user-agent
 	bin/elasticsearch-plugin install ingest-geoip
 
-### Installing Kibana (This part od the ELK stack build graphics and statictics, listen on 5601)
+### Installing Kibana
 
 	apt install kibana
 
@@ -95,14 +95,14 @@ This is a virtual host config file, delete the default file and create /etc/ngin
 		    }
 		}
 
-Activate this site creating the simbolic link, test it and restart&enabling:
+Activate this site creating the simbolic link, test it and restart&enable:
 
 		sudo ln -s /etc/nginx/sites-available/kibana /etc/nginx/sites-enabled/kibana
 		sudo nginx -t
 		sudo systemctl restart nginx
 		sudo systemctl enable nginx
 
-### Install Logstash, restart&enabling
+### Install Logstash, restart&enable
 	
 	sudo systemctl restart logstash
 	sudo systemctl enable logstash
