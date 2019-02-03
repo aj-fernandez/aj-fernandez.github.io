@@ -17,7 +17,7 @@
 	sudo apt update
 	sudo apt install elasticsearch
 
-### Limiting listen interfaces for Elasticsearch (not required xD)
+### Limiting listen interfaces for Elasticsearch
 
  Edit /etc/elasticsearch/elasticsearch.yml
 
@@ -238,3 +238,299 @@ On the [project website](https://www.elastic.co/guide/en/elasticsearch/guide/cur
 Do (/etc/sysctl.conf):
 
 	sysctl -w vm.max_map_count=262144
+
+
+##Rsync over SSH
+
+Synchronize local folder on remote server:
+
+
+	rsyn -r -a -v -e ssh /localFolder sshUser@server:/targetPath
+
+	rsync -r -a -v -e ssh  /localFolder sshUser@jupiter.ajfernandez.me:/targetPath
+
+		If ssh options needed, like port: 
+	
+			rsyn -r -a -v -e "ssh -p portNum" /localFolder sshUser@server:/targetPath
+
+
+ Synchronize folder from the remote server on the local server:
+
+	rsync -r -a -v -e ssh sshUser@server:/sourceFolder /pathTo/localFolder
+	
+## LDAP uiDnumber
+
+	ldapsearch -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(sn=jensen)(l=Cupertino))" 
+
+allUsersLdap
+ 
+	ldapsearch -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(uidNumber=*)(gidNumber=10000))" 
+
+allUserLDAP and grep to only show uidNumber 
+
+	ldapsearch -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(uidNumber=*)(gidNumber=10000))" | grep uidNumber 
+
+Flag -LLL exclude the output comment of "ldapsearch" from the output to stdout (display or file)
+
+Now allUsersLDAP without comment and ORDERED with sort -k2 :) 
+
+	ldapsearch -LLL  -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-		w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(uidNumber=*)(gidNumber=10000))" | grep uidNumber | sort -k2 
+
+All uidNumbers used by ldap users orderen without more stuffs 
+
+	ldapsearch -LLL  -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(uidNumber=*)(gidNumber=10000))" | grep uidNumber | sort -k2 | cut -d: -f2 
+
+All previous results and returning only the last line that matched with the higher uidNumber, so now i must set this command to a variable and sum 1 to set the new uidNumber for the user that im addind to LDAP 
+
+	ldapsearch -LLL  -h 192.168.2.200 -p 389 -D "cn=admin,dc=2cfs-w,dc=com" -w  Admin1234 -b "dc=2cfs-w,dc=com" "(&(uidNumber=*)(gidNumber=10000))" | grep uidNumber | sort -k2 | cut -d: -f2 | tail -1 
+
+## rSyslog
+
+	sudo apt install rsyslog
+
+
+Now edit Rsyslog configuration file and configure the location’s to generate log files in system.
+
+	vim /etc/rsyslog.conf
+
+And add following lines as the end of file.
+
+	$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log"
+
+	authpriv.*   ?TmplAuth
+	*.info,mail.none,authpriv.none,cron.none   ?TmplMsg
+
+
+Also remove comment from following lines ( remove starting # ) in rsyslog configuration file to enable UDP.
+
+	$ModLoad imudp
+	$UDPServerRun 514
+
+
+If you are using iptables to protect your system, then you need to add following rule to open port
+
+	iptables -A INPUT -m state --state NEW -m udp -p udp --dport 514 -j ACCEPT
+
+
+After making above changes in Rsyslog central server, restart service using following command.
+
+	service rsyslog restart
+	[or]
+	systemctl restart rsyslog
+
+
+
+After configuring Rsyslog centralized server, lets configure clients system to send there logs to central Rsyslog server. Login to each client nodes and add following line at end of the file
+
+	vim /etc/rsyslog.conf
+
+Add below line, change hostname or ip with your central Rsyslog systems ip/hostname.
+
+	*.*   @192.168.1.254:514
+	[or]
+	*.*   @logserver.example.com:514
+
+
+
+Restart rsyslog service using following command.
+
+	service rsyslog restart
+
+
+
+SELinux add
+
+	semanage -a -t syslogd_port_t -p udp 514
+
+MySQL
+
+	vim /etc/rsyslog.conf
+
+And add following entries in configuration file.
+
+	$ModLoad ommysql
+	*.* :ommysql:127.0.0.1,Syslog,rsyslog,MYSQLPASSWORD
+
+After adding above lines and restart Rsyslog service.
+
+	service rsyslog restart
+	[or]
+	systemctl restart rsyslog
+
+
+MYSQL script creación
+
+	mysql -u root -p < /usr/share/doc/rsyslog-mysql-4.8.10/createDB.sql
+
+Above command will create an database with name Syslog in MySQL. Now we need to create MySQL user for accessing database.
+
+	# mysql -u root -p
+	mysql> GRANT ALL ON Syslog.* TO 'rsyslog'@'localhost' IDENTIFIED BY 'MYSQLPASSWORD';
+	mysql> FLUSH PRIVILEGES;
+	mysql> exit
+
+
+	
+## SCREEN cheatsheet
+
+	$ screen -S nombreDeLaSesion
+
+OPCIONES
+
+	-S sockname     Da nombre a la sesión [pid].sockName.
+	-ls             Lista las sesiones abiertas de screen.
+	-r              Reattach a un sesión. Es posible especificar el nombre
+	-t título       Permite dar un título a una ventana
+
+DENTRO DE UNA SESION DE SCREEN
+
+
+	Ctrl-a ?          Ayuda de Screen 
+	Ctrl-a c          Crear una nueva ventana virtual.  
+	Ctrl-a ”          Lista navegable de ventanas abiertas 
+	Ctrl-a Ctrl-n     Cambiar a la venana Siguiente o Anterior 
+	Ctrl-a Ctrl-N     Cambiar a la Ventana N (de 0-9) 
+	Ctrl-a x          Bloquear todas las terminales con una clave 
+	Ctrl-a d          Hacer un Detach. Sales de la ventana pero la deja activa.  
+	exit              Con esto cierras la ventana virtual de definitivamente.
+	Ctrl-a S          Divide la ventana horizontalmente  
+	Ctrl-a tab        Salta a la siguiente zona  
+	Ctrl-a X          Cerrar la zona actual  
+	Ctrl-a Q          Cerrar todas las zonas excepto la actual 
+
+	Ctrl-a S          Divide horizontalmente
+	Ctrl-a tab        Salta a la siguiente zona
+	Ctrl-a X          Cerrar la zona actual
+	Ctrl-a Q          Cerrar todas las zonas excepto la actual
+
+	Ctrl-a d          Dettach. Sale de la sesión pero la deja en segundo plano 
+                  junto a todas sus ventanas.
+	exit              Cierra la ventana actual. Cerrando todas las ventanas
+                  se cierra la sesión de screen.
+
+
+Copiar en Screen
+
+	Ctrl-a + [      Entrar en modo copia/scroll.  
+	Enter           Comenzar la selección de texto / Finalizar la selección  
+                de texto, copiar y salir modo copia/scroll.
+	Cursor          Desplazamiento del cursor selecciona el texto a  
+                copiar (si estamos en modo copia/scroll).
+	ESC             Salir del modo copia/scroll sin copiar nada.  
+	Ctrl-a + ]      Pegar el texto copiado.
+
+
+##myRegex quickReference
+
+	Pattern Reference
+
+	Pattern 	Description
+	[abc]		A single character: a, b or c
+	[^abc]		Any single character but a, b, or c
+	[a-z]		Any single character in the range a-z
+	[a-zA-Z]	Any single character in the range a-z or A-Z
+	^		Start of line
+	$		End of line
+	\A		Start of string
+	\z		End of string
+	.		Any single character
+	\s		Any whitespace character
+	\S		Any non-whitespace character
+	\d		Any digit
+	\D		Any non-digit
+	\w		Any word character (letter, number, underscore)
+	\W		Any non-word character
+	\b		Any word boundary character
+	(...)		Capture everything enclosed
+	(a|b)		a or b
+	a?		Zero or one of a
+	a*		Zero or more of a
+	a+		One or more of a
+	a{3}		Exactly 3 of a
+	a{3,}		3 or more of a
+	a{3,6}		Between 3 and 6 of a
+
+
+On-line trainning in **regEx**
+
+	https://regexr.com/3g5j0
+	
+## Lsof family 
+
+	lsof -i :<port> -> -i of Internet
+
+	 	lsof -i :80 -> It will show the output of 80 port in that case.
+
+	lsof -c -> -c of command
+	
+		lsof -c apache2 -> Open files by apache
+
+What process openes a specific file?
+	
+		lsof /path/to/file
+
+Which files are opened in a directory?
+
+		lsof +D /path/to/dir
+
+Which files are open by a specific user?
+	
+		lsof -u userName
+
+Which files are open by a given process?
+
+		lsof -p PID
+		
+
+## Docker tarea2
+	
+	sudo docker commit --change='CMD ["wordpressScript"]' d8d8e74fef3e tarea2_e2_v4 -> its correct too use the full path /usr/sbin/wordpressScript
+
+	sudo docker run -d  -p 8080:80 --name wordpress tarea2_e2_v4
+
+	sudo docker save -o tarea2_e2_v4.tar tarea2_e2_v4 -> save a copy of this image in a .tar file
+
+	dettach /\ attach
+
+	Dettach ->  in the container's interpreter to dettach without close it -> CTRL P + CTRL Q (escape sequence!!!)
+	Attach  ->  sudo docker attach mylamp
+
+
+	sudo docker rm container -> remove
+	sudo docker rmi image -> remove
+
+	sudo docker tag wp_group2 ajfernandez/wp_group2 -> generate a new image from image with new tag
+
+	sudo docker commit containerName newImageName 
+
+**Networking**
+
+Info
+
+	docker inspect -f '{{.Name}} - {{.NetworkSettings.IPAddress }}' $(docker ps -aq) -> all containers on host with their IP
+	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
+
+ Setting-up
+
+	sudo docker network create --driver bridge jupiterNet --subnet=192.168.4.0/24 --gateway=192.168.4.1
+	sudo docker network create --driver bridge saturnNet --subnet=192.168.6.0/24 --gateway=192.168.6.1
+
+  Link
+
+	docker run -ti --rm --net=networName --name containerName
+	http://dondocker.com/como-hacer-redes-con-docker/
+
+example binding this new networks to containers: 
+
+	sudo docker run --network=jupiterNet -it --name webserv ajfernandez/lamp_base
+
+	sudo docker network ls
+
+	sudo docker network inspect jupiterNet
+
+"**Bridge**" is the default network in docker, this come from scratch.
+
+The following command will create a directory called nginxlogs in the user's home directory and bindmount it to /var/log/nginx in 
+   the container:
+
+    docker run --name=nginx -d -v ~/nginxlogs:/var/log/nginx -p 5000:80 nginx
