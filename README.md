@@ -243,7 +243,7 @@ Do (/etc/sysctl.conf):
 
 
 
-##Rsync over SSH
+## Rsync over SSH
 
 Synchronize local folder on remote server:
 
