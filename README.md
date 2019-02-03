@@ -239,6 +239,9 @@ Do (/etc/sysctl.conf):
 
 	sysctl -w vm.max_map_count=262144
 
+![alt text](https://www.vanimpe.eu/wp-content/uploads/2014/12/hp4.png)
+
+
 
 ##Rsync over SSH
 
