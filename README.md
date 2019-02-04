@@ -551,4 +551,7 @@ Sort the output of ls by any attribute:
 Sort any of previous command or ls output in ascending way:
 
         ls -r //flag -r (reverse)
+	
+## Displaying file or filsystem status -stat command-
 
+	![alt text](https://raw.githubusercontent.com/aj-fernandez/aj-fernandez.github.io/master/img/stat.png)
