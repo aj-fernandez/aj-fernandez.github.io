@@ -554,4 +554,6 @@ Sort any of previous command or ls output in ascending way:
 	
 ## Displaying file or filsystem status -stat command-
 
-	![alt text](https://github.com/aj-fernandez/aj-fernandez.github.io/blob/master/img/stat.jpg)
+![alt text](https://raw.githubusercontent.com/aj-fernandez/aj-fernandez.github.io/master/img/stat.jpg)
+	
+	
