@@ -537,3 +537,18 @@ The following command will create a directory called nginxlogs in the user's hom
    the container:
 
     docker run --name=nginx -d -v ~/nginxlogs:/var/log/nginx -p 5000:80 nginx
+
+## "ls" bash useful options
+
+Sort files by modification date (descending order):
+
+        ls -lt
+
+Sort the output of ls by any attribute:
+
+        ls --sort=size
+
+Sort any of previous command or ls output in ascending way:
+
+        ls -r //flag -r (reverse)
+
