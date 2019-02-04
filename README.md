@@ -1,5 +1,12 @@
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Solar-System.pdf/page1-3897px-Solar-System.pdf.jpg)
 
+***
+
+- [x] **Create my own reference guide for mobility**
+***
+
+
+
 # Installing ELK stack on Hewlett Packard ML350 G5 (thanks SAFA for the hardware)
 ![alt text](https://ydevs.com/wp-content/uploads/2017/10/logos-stack-elk.png)
 ### Update and install required packages
